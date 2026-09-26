@@ -1,0 +1,23 @@
+{
+  "name": "haixin-cs-portal",
+  "version": "2.0.0",
+  "description": "海信冰箱智能客服 portal，服务端调用扣子工作流",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env server.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "hisense",
+    "customer-service",
+    "chatbot",
+    "coze",
+    "ai"
+  ],
+  "author": "Hisense CS Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.22.2"
+  }
+}

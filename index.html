@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#123b59" />
+    <meta name="description" content="海信冰箱订单、物流、支付及售后智能咨询。" />
+    <title>海信智能客服 · 小信在线</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="海信智能客服首页">
+          <span class="brand-mark" aria-hidden="true">H</span>
+          <span class="brand-name">Hisense<span class="brand-divider"></span><span class="brand-cn">智能客服</span></span>
+        </a>
+        <div class="header-right">
+          <span class="header-caption">用心回应 · 每一个问题</span>
+          <span class="header-status" id="headerStatus"><span class="status-light"></span><span id="availabilityText">连接服务中</span></span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="intro-panel" aria-label="服务介绍">
+          <div class="intro-inner">
+            <div class="eyebrow"><span class="eyebrow-line"></span> HISENSE SERVICE / 01</div>
+            <h1>让每一次<br /><em>求助</em>，都有回应。</h1>
+            <p class="intro-copy">从订单到售后，小信陪您一起找到下一步。说出您遇到的问题，我们会认真倾听。</p>
+
+            <div class="service-list" aria-label="咨询范围">
+              <div class="service-item"><span class="service-number">01</span><span>订单与物流</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+              <div class="service-item"><span class="service-number">02</span><span>支付与退款</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+              <div class="service-item"><span class="service-number">03</span><span>退换与售后</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+
+            <div class="product-card">
+              <div class="product-card-top"><span class="product-icon" aria-hidden="true">✳</span><span>让回答更贴合您的产品</span></div>
+              <label for="productModel">冰箱型号 <span>选填</span></label>
+              <input id="productModel" name="productModel" type="text" maxlength="120" autocomplete="off" placeholder="例如：BCD-XXX" />
+              <p>目前接入的是海信冰箱订单服务工作流。</p>
+            </div>
+          </div>
+          <div class="intro-footer"><span class="footer-orbit" aria-hidden="true"></span> CUSTOMER CARE, REIMAGINED</div>
+        </aside>
+
+        <section class="chat-panel" aria-label="与小信对话">
+          <div class="chat-heading">
+            <div class="agent-avatar" aria-hidden="true"><span>信</span><i></i></div>
+            <div class="agent-title"><div class="agent-kicker">您的专属智能客服</div><h2>小信在线 <span>· 海信冰箱服务</span></h2></div>
+            <button id="newChatButton" class="new-chat" type="button" aria-label="开启新对话" title="开启新对话">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>新对话</span>
+            </button>
+          </div>
+
+          <div class="chat-scroll" id="chatScroll">
+            <div class="conversation" id="conversation" role="log" aria-live="polite" aria-label="对话记录">
+              <div class="welcome" id="welcome">
+                <span class="welcome-symbol" aria-hidden="true">✳</span>
+                <span class="welcome-overline">A LITTLE HELP, RIGHT HERE</span>
+                <h3>您好，我是小信。<br />今天想聊什么？</h3>
+                <p>订单进度、付款疑问、退换货与售后问题，都可以从这里开始。</p>
+                <div class="welcome-rule"></div>
+                <span class="welcome-note">选择一个常见问题，或直接输入您的情况</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="composer-area">
+            <div class="error-banner" id="errorBanner" role="alert" hidden></div>
+            <div class="quick-prompts" aria-label="常见问题">
+              <button class="quick-prompt" type="button" data-prompt="我的冰箱订单现在到哪里了？"><span>↗</span> 查询物流</button>
+              <button class="quick-prompt" type="button" data-prompt="支付成功后订单没有显示，怎么办？"><span>↗</span> 支付问题</button>
+              <button class="quick-prompt" type="button" data-prompt="我想申请退换货，需要怎么操作？"><span>↗</span> 申请退换</button>
+              <button class="quick-prompt" type="button" data-prompt="海信冰箱的售后政策是什么？"><span>↗</span> 售后政策</button>
+            </div>
+            <form id="chatForm" class="composer">
+              <label class="sr-only" for="messageInput">请输入您的问题</label>
+              <textarea id="messageInput" name="message" rows="1" maxlength="2000" placeholder="说说您遇到的问题…" aria-describedby="inputHint"></textarea>
+              <button id="sendButton" class="send-button" type="submit" aria-label="发送消息" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12 16-8-5 16-3.2-6.8L4 12Zm7.8 1.2L20 4"/></svg>
+              </button>
+            </form>
+            <div class="composer-foot"><span id="inputHint">Enter 发送 · Shift + Enter 换行</span><span>智能回复由扣子工作流提供</span></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
