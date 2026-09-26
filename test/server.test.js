@@ -198,6 +198,29 @@ test('excess simultaneous chats get a retryable busy response', async () => {
   });
 });
 
+test('repeated requests from one client are rate limited before reaching Coze', async () => {
+  let upstreamCalls = 0;
+  const app = createApp({
+    env: { COZE_ACCESS_TOKEN: 'test-token' },
+    fetchImpl: async () => {
+      upstreamCalls += 1;
+      return new Response('event: conversation.message.completed\ndata: {"type":"answer","content":"您好"}\n\nevent: done\ndata: {}\n\n');
+    },
+  });
+  await withServer(app, async (base) => {
+    const post = () => fetch(`${base}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: '您好', history: [] }),
+    });
+    for (let i = 0; i < 20; i += 1) assert.equal((await post()).status, 200);
+    const limited = await post();
+    assert.equal(limited.status, 429);
+    assert.equal(limited.headers.get('Retry-After'), '60');
+    assert.equal(upstreamCalls, 20);
+  });
+});
+
 test('health reports a token nearing expiry and rejects an expired token', async () => {
   const env = { COZE_ACCESS_TOKEN: 'test-token', COZE_TOKEN_EXPIRES_AT: '2026-10-26' };
   assert.equal(getTokenStatus(env, Date.parse('2026-10-23T00:00:00+08:00')).expiresSoon, true);

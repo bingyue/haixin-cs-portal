@@ -8,6 +8,8 @@ const MAX_MESSAGE_LENGTH = 2000;
 const MAX_PRODUCT_LENGTH = 120;
 const MAX_HISTORY_ITEMS = 16;
 const MAX_ACTIVE_CHAT_REQUESTS = 8;
+const MAX_CLIENT_REQUESTS_PER_MINUTE = 20;
+const MAX_GLOBAL_REQUESTS_PER_MINUTE = 100;
 const MAX_UPSTREAM_BYTES = 1024 * 1024;
 const COZE_TIMEOUT_MS = 85_000;
 
@@ -128,6 +130,9 @@ function parseChatStream(raw) {
 function createApp({ fetchImpl = fetch, env = process.env } = {}) {
   const app = express();
   let activeChatRequests = 0;
+  let globalWindowStart = Date.now();
+  let globalRequests = 0;
+  const clientWindows = new Map();
   app.disable('x-powered-by');
   app.use(express.json({ limit: '64kb' }));
 
@@ -175,9 +180,26 @@ function createApp({ fetchImpl = fetch, env = process.env } = {}) {
     if (!getTokenStatus(env).configured) {
       return res.status(503).json({ error: '客服服务尚未完成配置或凭证已过期。' });
     }
+    const now = Date.now();
+    if (now - globalWindowStart >= 60_000) {
+      globalWindowStart = now;
+      globalRequests = 0;
+    }
+    const clientKey = req.ip || 'unknown';
+    let client = clientWindows.get(clientKey);
+    if (!client || now - client.start >= 60_000) {
+      client = { start: now, count: 0 };
+      clientWindows.set(clientKey, client);
+    }
+    if (client.count >= MAX_CLIENT_REQUESTS_PER_MINUTE || globalRequests >= MAX_GLOBAL_REQUESTS_PER_MINUTE) {
+      return res.status(429).set('Retry-After', '60').json({ error: '咨询过于频繁，请稍后再试。' });
+    }
     if (activeChatRequests >= MAX_ACTIVE_CHAT_REQUESTS) {
       return res.status(503).set('Retry-After', '5').json({ error: '客服当前繁忙，请稍后重试。' });
     }
+    client.count += 1;
+    globalRequests += 1;
+    if (clientWindows.size > 1000) clientWindows.delete(clientWindows.keys().next().value);
 
     const parameters = {
       product_info: productModel ? `海信冰箱；型号：${productModel}` : '海信冰箱；具体型号暂未提供',

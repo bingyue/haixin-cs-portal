@@ -23,7 +23,11 @@ npm start
 
 更换令牌或修改代码后，用 `launchctl kickstart -k gui/$(id -u)/com.haixin.cs-portal` 重启服务；用 `launchctl print gui/$(id -u)/com.haixin.cs-portal` 查看托管状态。
 
-服务端还限制同时运行的咨询为 8 个、扣子响应为 1 MiB，并对超时和客户端断开连接及时释放请求。忙时会返回可重试的错误，Portal 保留用户的问题供重发。
+服务端还限制同时运行的咨询为 8 个、单个客户端每分钟 20 次、全局每分钟 100 次、扣子响应为 1 MiB，并对超时和客户端断开连接及时释放请求。忙时会返回可重试的错误，Portal 保留用户的问题供重发。
+
+### Ubuntu + Docker 部署
+
+服务器安装 Docker Compose 后，克隆仓库，在项目目录创建权限为 `0600` 的 `.env`（至少设置 `COZE_ACCESS_TOKEN` 和 `COZE_TOKEN_EXPIRES_AT`），然后执行 `docker compose up -d --build`。容器会在异常退出后自动重启；`docker compose ps` 可查看健康状态。Compose 默认发布 TCP 3005，需在云防火墙中单独放行此端口。请勿把 `.env` 提交到 Git。
 
 ## 接口映射
 
